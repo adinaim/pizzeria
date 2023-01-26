@@ -36,6 +36,11 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'django_filters',
+
+    'django_rest_passwordreset',
+    'phonenumber_field',
+
+    'social_django',
 ]
 
 MIDDLEWARE = [
@@ -176,9 +181,9 @@ REST_FRAMEWORK = {
 }
 
 
-AUTHENTICATION_BACKENDS = (
-
-)
+# AUTHENTICATION_BACKENDS = (
+#        'django.contrib.auth.backends.ModelBackend',
+# )
 
 
 LOGGING = {
