@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'apps.account',
+    'apps.pizza',
 
     'rest_framework',
     'drf_yasg',
