@@ -3,13 +3,13 @@ from rest_framework.routers import DefaultRouter
 
 from .views import (
     PizzaViewSet,
-    # ConcretePizzaViewSet
+    ConcretePizzaViewSet
     )
 
 
 router = DefaultRouter()
 router.register('pizza', PizzaViewSet)
-# router.register('concrete-pizza', ConcretePizzaViewSet)
+router.register('concrete-pizza', ConcretePizzaViewSet)
 
 
 
