@@ -8,7 +8,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ('email', 'username', 'password', 'password2', 'phone')
+        fields = '__all__' # 'username', 
 
     def validate_email(self, email):
         # Check that the email address is unique
@@ -16,11 +16,11 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Email address already in use')
         return email
 
-    def validate_username(self, username):
-        # Check that the username is unique
-        if CustomUser.objects.filter(username=username).exists():
-            raise serializers.ValidationError('Username already exists')
-        return username
+    # def validate_username(self, username):
+    #     # Check that the username is unique
+    #     if CustomUser.objects.filter(username=username).exists():
+    #         raise serializers.ValidationError('Username already exists')
+    #     return username
 
     def validate_password(self, password):
         # Check that the password meets certain requirements
@@ -36,9 +36,11 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         # Create a CustomUser object
         user = CustomUser(
             email=self.validated_data['email'],
-            username=self.validated_data['username'],
+            # username=self.validated_data['username'],
             phone=self.validated_data['phone'],
         )
+        user.create_activation_code()
+        user.send_code(user.email, user.activation_code)
         password = self.validated_data['password']
         password2 = self.validated_data['password2']
         if password != password2:
@@ -57,7 +59,7 @@ class UsersProfileSerializer(serializers.ModelSerializer):
 class VerifySerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ('email', 'email_verify',)
+        fields = ('email',) # 'email_verify',
 
 
 class PasswordChangeSerializer(serializers.Serializer):

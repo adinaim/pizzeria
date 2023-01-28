@@ -40,7 +40,7 @@ class EmailVerifyAPIView(generics.RetrieveAPIView):
     serializer_class = VerifySerializer
     queryset = CustomUser.objects.filter(is_active=False)
 
-    lookup_field = 'email_verify'
+    # lookup_field = 'email_verify'
 
     def retrieve(self, request, *args, **kwargs):
         instance: CustomUser = self.get_object()
