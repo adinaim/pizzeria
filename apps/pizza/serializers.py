@@ -9,7 +9,7 @@ User = get_user_model()
 class PizzaCreateSerialiazers(serializers.ModelSerializer):
     class Meta:
         model = Pizza
-        fields = ' __all__'
+        fields = '__all__'
 
     def create(self, validated_data):
         pizza = Pizza.objects.create(**validated_data)
@@ -19,7 +19,12 @@ class PizzaCreateSerialiazers(serializers.ModelSerializer):
 class PizzaSerializers(serializers.ModelSerializer):
     class Meta:
         model = Pizza
-        fields = ' __all__'
+        fields = '__all__'
+
+    def to_representation(self, instance: Pizza):
+        pizza = instance.pizza.all()
+        representation = super().to_representation(instance)  
+        representation['pizza'] = ConcretePizzaSerializers(instance=pizza).data
 
 
 class PizzaListSeriaizers(serializers.ModelSerializer):
@@ -28,33 +33,33 @@ class PizzaListSeriaizers(serializers.ModelSerializer):
         fields = '__all__'
 
 
-# class ConcretePizzaCreateSerialiazers(serializers.ModelSerializer):
-#     class Meta:
-#         model = ConcretePizza
-#         fields = ' __all__'
+class ConcretePizzaCreateSerialiazers(serializers.ModelSerializer):
+    class Meta:
+        model = ConcretePizza
+        fields = '__all__'
 
-#     def create(self, validated_data):
-#         pizza = ConcretePizza.objects.create(**validated_data)
-#         return pizza
-
-
-# class ConcretePizzaSerializers(serializers.ModelSerializer):
-#     class Meta:
-#         model = ConcretePizza
-#         fields = ' __all__'
+    def create(self, validated_data):
+        pizza = ConcretePizza.objects.create(**validated_data)
+        return pizza
 
 
-# class ConcretePizzaListSeriaizers(serializers.ModelSerializer):
-#     class Meta:
-#         model = Pizza
-#         fields = '__all__'
+class ConcretePizzaSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = ConcretePizza
+        fields = '__all__'
 
-# class PizzaRetrieveSerializers(serializers.ModelSerializer):
-#     class Meta:
-#         model = Pizza
-#         fields = ['title', 'image']
 
-#     def to_representation(self, instance: Pizza):
-#         pizza = instance.pizza.all()
-#         representation = super().to_representation(instance)  
-#         representation['pizza'] = ConcretePizzaSerializers(instance=pizza).data
+class ConcretePizzaListSeriaizers(serializers.ModelSerializer):
+    class Meta:
+        model = Pizza
+        fields = '__all__'
+
+class PizzaRetrieveSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Pizza
+        fields = ['title', 'image']
+
+    def to_representation(self, instance: Pizza):
+        pizza = instance.pizza.all()
+        representation = super().to_representation(instance)  
+        representation['pizza'] = ConcretePizzaSerializers(instance=pizza).data

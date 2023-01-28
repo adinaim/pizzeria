@@ -2,12 +2,12 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAdminUser, AllowAny
 from .serializers import (
     PizzaCreateSerialiazers,
-    # ConcretePizzaCreateSerialiazers,
+    ConcretePizzaCreateSerialiazers,
     PizzaListSeriaizers,
-    # ConcretePizzaListSeriaizers,
+    ConcretePizzaListSeriaizers,
     PizzaSerializers,
-    # ConcretePizzaSerializers,
-    # PizzaRetrieveSerializers
+    ConcretePizzaSerializers,
+    PizzaRetrieveSerializers
 )
 
 
@@ -35,18 +35,18 @@ class PizzaViewSet(ModelViewSet):
         return super().get_permissions() 
 
 
-# class ConcretePizzaViewSet(ModelViewSet):
-#     queryset = ConcretePizza.objects.all()
-#     permission_classes = IsAdminUser
+class ConcretePizzaViewSet(ModelViewSet):
+    queryset = ConcretePizza.objects.all()
+    permission_classes = IsAdminUser
 
-#     def get_serializer_class(self):
-#         if self.action == 'list':
-#             return ConcretePizzaListSeriaizers
-#         return PizzaSerializers
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return ConcretePizzaListSeriaizers
+        return ConcretePizzaSerializers
 
-#     def get_permissions(self):
-#         if self.action in ['list', 'retrieve']:
-#             self.permission_classes = [AllowAny]
-#         if self.action in ['create', 'destroy', 'update', 'partial_update']:
-#             self.permission_classes = [IsAdminUser]
-#         return super().get_permissions() 
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            self.permission_classes = [AllowAny]
+        if self.action in ['create', 'destroy', 'update', 'partial_update']:
+            self.permission_classes = [IsAdminUser]
+        return super().get_permissions() 
