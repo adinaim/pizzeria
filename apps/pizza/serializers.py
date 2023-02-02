@@ -69,7 +69,7 @@ class PizzaSerializers(serializers.ModelSerializer):
 class PizzaListSeriaizers(serializers.ModelSerializer):
     class Meta:
         model = Pizza
-        fields = ['title', 'desc', 'size']
+        fields = ['title', 'desc'] # size
 
 
 class PizzaRetrieveSerializers(serializers.ModelSerializer):
