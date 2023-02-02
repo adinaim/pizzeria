@@ -4,58 +4,77 @@ from .models import (
     Purchase, 
     Items
 )
-# from .utils import cashback
+from apps.account.models import UserProfile
+from .utils import cashback
 
 
-class TourItemsSerializer(serializers.ModelSerializer):
+class ItemsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Items
-        fields = ['tour', 'people_num']
+        fields = ['pizza', 'quantity', 'size']
 
 
-class TourPurchaseSerializer(serializers.ModelSerializer):
-    items = TourItemsSerializer(many=True) 
+class PurchaseSerializer(serializers.ModelSerializer):
+    items = ItemsSerializer(many=True) 
 
     class Meta:
         model = Purchase
-        fields = ['order_id', 'created_at', 'total_sum', 'items']
+        fields = ['order_id', 'created_at', 'updated_at', 'total_sum', 'address', 'items']
 
     def create(self, validated_data, *args, **kwargs):
+        user = self.context['request'].user
+        email = user.email
+        profile = UserProfile.objects.get(user=email)
+        p_cashback = profile.cashback
+
         items = validated_data.pop('items')
         validated_data['user'] = self.context['request'].user
         order = super().create(validated_data) # Order.objects.create
         total_sum = 0
         orders_items = []
         for item in items:
-            tickets = (Items(
+            pizzas = (Items(
                 order=order,
-                tour=item['tour'],
-                people_num=item['people_num']
+                pizza=item['pizza'],
+                quantity=item['quantity'],
+                size=item['size']
             ))
-            orders_items.append(tickets)
+            orders_items.append(pizzas)
 
-            if item['tour'].people_count >= item['people_num']:
-                item['tour'].people_count -= item['people_num']
+            if item['size'] == 's':
+                price = item['pizza'].size.get('30').get('price')
+            elif item['size'] == 'l':
+                price = item['pizza'].size.get('40').get('price')
 
-                total_sum += item['tour'].price_som * item['people_num']
-                Items.objects.bulk_create(orders_items, *args, **kwargs)
-                order.total_sum = total_sum
+            total_sum += price * item['quantity']    # size   item['pizza'].price
 
-                order.create_code()
-                if self.context['request'].user.is_authenticated:
-                    # cashback(self.context, order, total_sum, item['tour'].tour.company_name)
-                    pass
+            Items.objects.bulk_create(orders_items, *args, **kwargs)
 
-                item['tour'].save()
-                order.save()
+            order.total_sum = total_sum
 
-                return order
-            else:
-                raise serializers.ValidationError('Недостаточно свободных мест.')
+            if self.context['request'].user.is_authenticated and cashback=='yes' and self.p_cashback:
+                cashback(self.context, order, total_sum)
+
+            item['pizza'].save()
+            order.save()
+
+        return order
+
+
+class PurchaseListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Purchase
+        fields = ['order_id', 'pizza', 'status', 'created_at']
+
+
+class PurchaseRetrieveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Purchase
+        fields = '__all__'
 
 
 class PurchaseHistorySerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Purchase
-        fields = ('order_id', 'total_sum', 'status', 'created_at', 'tour')
+        fields = ('order_id', 'total_sum', 'status', 'created_at', 'pizza')

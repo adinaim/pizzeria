@@ -39,4 +39,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('apps.account.urls')),
     path('', include('apps.pizza.urls')),
+    path('', include('apps.order.urls')),
 ]
